@@ -4,3 +4,4 @@
 env
 dist
 oauthclient.egg-info
+google_oauthclient.egg-info
