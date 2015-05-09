@@ -4,4 +4,5 @@
 env
 dist
 oauthclient.egg-info
+django_oauthclient.egg-info
 google_oauthclient.egg-info
