@@ -4,9 +4,9 @@ from setuptools import setup
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
-    name='oauthclient',
+    name='google_oauthclient',
     version='1.0',
-    packages=['oauthclient'],
+    packages=['google_oauthclient'],
     include_package_data=True,
     license='MIT',
     description='',
