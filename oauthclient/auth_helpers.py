@@ -4,25 +4,29 @@ from oauth2client.client import OAuth2WebServerFlow
 import urllib
 import json
 
+def me(request):
+    if 'token' in request.session:
+        uri = 'https://www.googleapis.com/plus/v1/people/me?access_token=' + request.session['token']
+        r = urllib.urlopen(uri)
+        u = json.loads(r.read())
+        return u
+    else:
+        return {'message':'Not authenticated'}
+
 def check_auth(request):
-    print 'authenticating'
     if 'token' in request.session:
         try:
-            gmail = check_token(request.session['token'])
+            gmail = get_gmail(request.session['token'])
             if not gmail:
-                print 'if not gmail'
                 return False
             else:
-                print 'else'
                 user = User.objects.get(email=gmail) 
-                
                 return True
         except User.DoesNotExist:
             pass
-    print 'return anon'
     return False
 
-def check_token(token):
+def get_gmail(token):
     uri = 'https://www.googleapis.com/plus/v1/people/me?access_token=' + token
     r = urllib.urlopen(uri)
     try:
@@ -32,14 +36,14 @@ def check_token(token):
         return False
 
 def handle_redirect():
-    flow = OAuth2WebServerFlow(client_id=settings.CLIENT_ID,client_secret=settings.CLIENT_SECRET, scope=settings.SCOPES,redirect_uri=settings.DEBUG_REDIRECT)
+    flow = OAuth2WebServerFlow(client_id=settings.CLIENT_ID,client_secret=settings.CLIENT_SECRET, scope=settings.SCOPES,redirect_uri=settings.CALLBACK_URI)
     return flow.step1_get_authorize_url()
 
 def handle_callback(request):
     code = request.GET.get('code', '')
-    flow = OAuth2WebServerFlow(client_id=settings.CLIENT_ID,client_secret=settings.CLIENT_SECRET, scope=settings.SCOPES,redirect_uri=settings.DEBUG_REDIRECT)
+    flow = OAuth2WebServerFlow(client_id=settings.CLIENT_ID,client_secret=settings.CLIENT_SECRET, scope=settings.SCOPES,redirect_uri=settings.CALLBACK_URI)
     credentials = flow.step2_exchange(code)
-    gmail = check_token(credentials.access_token)
+    gmail = get_gmail(credentials.access_token)
     try:
         user = User.objects.get(email=gmail)
     except User.DoesNotExist:

@@ -1,26 +1,24 @@
 from django.shortcuts import redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from auth_helpers import *
+from django.conf import settings
 
 # Required views for Google+ authentication   
 def revoke(request):
     r = revoke_token(request)
-    return HttpResponse('token revoked')
+    return JsonResponse({'success':'token revoked'})
 
 def oauth2_callback(request):
     result = handle_callback(request)
-    return redirect('/checkauth')
+    return redirect(settings.REDIRECT_URI)
 
-
-
-def checkauth(request):
+def login(request):
     if check_auth(request):
         # User has been authenticated, form response here.
-        return HttpResponse('authenticated')
+        return JsonResponse(me(request))
     else:
         # Required redirect
         return redirect(handle_redirect())
-    
 
 
 

@@ -1,22 +1,19 @@
 import os
 from setuptools import setup
 
-with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
-    README = readme.read()
-
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='oauthclient',
-    version='0.4',
+    version='1.0',
     packages=['oauthclient'],
     include_package_data=True,
     license='MIT',
     description='',
-    long_description=README,
-    url='',
     author='Evan Harris',
-    author_email='',
+    url = 'https://github.com/harrise/django-oauthclient',
+    download_url = 'https://github.com/harrise/django-oauthclient/tarball/0.1', 
+    author_email='harrise@carleton.edu',
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
