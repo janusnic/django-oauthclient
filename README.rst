@@ -23,3 +23,12 @@ Quick start
     PRODUCTION_REDIRECT = '<your_site>/oauth2callback'
 
 5. Run server and visit the `/checkauth` endpoint to authenticate with Google+.
+
+6. To use Google+ Authentication in your views::
+    
+    if check_auth(request):
+        # User has been authenticated, form response here.
+        return HttpResponse('authenticated')
+    else:
+        # Required redirect
+        return redirect(handle_redirect())
