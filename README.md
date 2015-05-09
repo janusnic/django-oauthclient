@@ -1,4 +1,9 @@
 ## Installation
+```
+pip install google_oauthclient
+```
+
+## Configuration
 1. Add "google_oauthclient" to your INSTALLED_APPS setting.
 ```
 INSTALLED_APPS = (
