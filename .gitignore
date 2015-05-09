@@ -2,3 +2,5 @@
 \*.py[co1]
 *~
 env
+dist
+oauthclient.egg-info

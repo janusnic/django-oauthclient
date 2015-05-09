@@ -1,16 +1,32 @@
-import requests
 from django.contrib.auth.models import User
 from django.conf import settings
 from oauth2client.client import OAuth2WebServerFlow
+import urllib
+import json
+
+def check_auth(request):
+    print 'authenticating'
+    if 'token' in request.session:
+        try:
+            gmail = check_token(request.session['token'])
+            if not gmail:
+                print 'if not gmail'
+                return False
+            else:
+                print 'else'
+                user = User.objects.get(email=gmail) 
+                
+                return True
+        except User.DoesNotExist:
+            pass
+    print 'return anon'
+    return False
 
 def check_token(token):
-    headers = {"accept-encoding": "gzip, deflate", "accept": "application/json", "user-agent": "google-api-python-client/1.0"}
     uri = 'https://www.googleapis.com/plus/v1/people/me?access_token=' + token
-    r = requests.get(uri, headers=headers)
-    if r.status_code == 401:
-        return False
+    r = urllib.urlopen(uri)
     try:
-        gmail = r.json()['emails'][0]['value']
+        gmail = json.loads(r.read())['emails'][0]['value']
         return gmail
     except KeyError:
         return False
@@ -20,7 +36,7 @@ def handle_redirect():
     return flow.step1_get_authorize_url()
 
 def handle_callback(request):
-    code = request.query_params['code']
+    code = request.GET.get('code', '')
     flow = OAuth2WebServerFlow(client_id=settings.CLIENT_ID,client_secret=settings.CLIENT_SECRET, scope=settings.SCOPES,redirect_uri=settings.DEBUG_REDIRECT)
     credentials = flow.step2_exchange(code)
     gmail = check_token(credentials.access_token)
@@ -35,11 +51,10 @@ def handle_callback(request):
 def revoke_token(request):
     if 'token' in request.session:
         access_token = request.session['token']
-        headers = {"accept-encoding": "gzip, deflate", "accept": "application/json", "user-agent": "google-api-python-client/1.0"}
         uri = 'https://accounts.google.com/o/oauth2/revoke?token=' + access_token
-        r = requests.get(uri, headers=headers)
+        urllib.urlopen(uri)
         request.session.flush()
-        return r
+        return None
     else:
         request.session.flush()
         return None
